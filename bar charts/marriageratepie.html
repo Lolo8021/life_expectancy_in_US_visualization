@@ -1,0 +1,81 @@
+<html>
+<meta charset="utf-8">
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+//parameters of canvas
+var width = 1500,
+    height = 1000,
+    radius = 500;
+//color of outer circle	
+var color = d3.scale.ordinal()
+ //   .range(["#145a32", " #a9dfbf "]);
+	.range(["#ff8c00"]);
+//color of inner circle
+var color1 = d3.scale.ordinal()
+//	.range([" #f5b041", "  #e59866  "]);
+	.range(["#f7f13b"]);
+//outer circle dimensions
+var arc = d3.svg.arc()
+    .outerRadius(radius)
+    .innerRadius(radius-145);
+//inner circle dimensions	
+var arc1= d3.svg.arc()
+	.outerRadius(radius-125)
+	.innerRadius(50);
+//lable for outer circle
+var labelArc = d3.svg.arc()
+    .outerRadius(radius-50 )
+    .innerRadius(radius-50 );
+//label for inner circle	
+var labelArc1=d3.svg.arc()
+	.outerRadius(radius-320)////
+	.innerRadius(radius-5)
+//creating the pie layout
+var pie = d3.layout.pie()
+    .value(function(d) { return d.marriage_rate; })
+	.sort(null);
+//appending the svg
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+//importing data
+d3.csv("latestdataset.csv", type, function(error, data) {
+  if (error) throw error;
+
+ var g = svg.selectAll(".arc")
+      .data(pie(data))
+    .enter().append("g")
+      .attr("class", "arc");
+	  
+//filling the outer circle with one attribute
+ g.append("path")
+      .attr("d", arc)
+	  .style("fill", function(d) {return color(d.data.state);});
+//filling the inner circle with another attribute	  
+g.append("path")
+      .attr("d", arc1)
+	  .style("fill", function(d) {return color1(d.data.marriage_rate);});
+//positioning the labels
+ g.append("text")
+	  .attr("fill","white")
+      .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+      .text(function(d) { return d.data.state; });
+	 
+	 g.append("text")
+	  .attr("fill","blue")
+      .attr("transform", function(d) { return "translate(" + labelArc1.centroid(d) + ")"; })
+      .text(function(d) { return d.data.marriage_rate; });
+	  
+	  
+});
+
+function type(d) {
+  d.marriage_rate = +d.marriage_rate;
+  return d;
+}
+
+</script>
+</html>

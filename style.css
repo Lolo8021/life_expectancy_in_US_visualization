@@ -1,0 +1,123 @@
+    body{
+		background-color: black;
+		text-align: center;
+	}
+     .state{
+        stroke: #3B170B;
+        stroke-width: 1;		
+    } 
+    .state:hover{
+        fill-opacity:0.3;
+    }
+	.bar{
+		fill: steelblue;
+	}
+	.bar:hover{
+		fill: brown;
+	}
+    #tooltip {
+        position: absolute;
+        text-align: center;
+        padding: 20px;
+        margin: 10px;
+		font-size: 14px;
+        background: lightsteelblue;
+        border: 1px solid black; 
+        border-radius: 2px;
+        /* pointer-events: none; */
+    }
+    #tooltip h4{
+        margin:0;
+        font-size:14px;
+    }
+    #tooltip{
+        background:rgba(0,0,0,0.9);
+        border:1px solid grey;
+        border-radius:5px;
+        font-size:12px;
+        width:auto;
+        padding:4px;
+        color:white;
+        opacity:0;
+    }
+	#buttons{
+		text-align: center;
+		width:100%;
+		background-color: #ACFA58;
+		padding: 10px;
+		margin: 15px;
+		/* background-color: white; */
+		
+	}
+	
+	#but{
+		font-size: 16px;
+		padding: 10px;
+		margin: 15px; 		
+	}
+	
+    #tooltip table{
+        table-layout:fixed;
+    }
+		
+	#life{
+	font-size:60px;
+	text-align: center;
+	font-weight: 600;
+	color: #f0f0f0;
+	}	
+	
+    #tooltip tr td{
+        padding:0;
+        margin:0;
+		width: 120px;
+		text-align: center;
+		font-size: 12px;
+    }
+
+
+	.dropbtn {
+    background-color: #ACFA58;
+    color: blue;
+    font-size: 16px;
+    cursor: pointer;
+	padding: 10px;
+	margin: 15px;
+}
+
+
+	.dropdown {
+    position: relative;
+    display: inline-block;
+	}
+
+
+	.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 100px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+	}
+
+
+	.dropdown-content option {
+    color: black;
+    padding: 6px 10px;
+    text-decoration: none;
+    display: inline-block;
+	}
+
+
+	.dropdown-content option:hover {background-color: #f1f1f1}
+
+
+	.dropdown:hover .dropdown-content {
+    display: inline-block;
+	}
+
+
+	.dropdown:hover .dropbtn {
+    background-color: white;
+	}

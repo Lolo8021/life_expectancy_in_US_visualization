@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link rel="stylesheet" type="text/css" href="style.css">
+<body>
+<div id = "life">Life Expectancy in US</div>
+<div id="tooltip"></div><!-- div to hold tooltip. -->
+
+<svg width="960" height="600" id="statesvg"></svg> <!-- svg to hold the map. -->
+
+<script src="usmap.js"></script> <!-- creates uStates. -->
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+
+<!-- <div id = "buttons">
+<button type = "button" onclick = "barchart()">Health Rank</button>  
+
+		<select id = "variable">
+		  <option>Select from the dropdown</option>
+		  <option value="allraces" onclick = "allraces()">All Races</option>
+          <option value="males_all" onclick = "maleexpectancy()">Males</option>
+          <option value="females_all" onclick = "femaleexpectancy()">Females</option> 
+		 </select>
+ 
+</div> -->
+<div id = "buttons">
+<button id = "but" type = "button" onclick = "healthchart()">Health Rank</button> 
+<button id = "but" type = "button" onclick = "unemployment()">Unemployment Rate</button> 
+<button id = "but" type = "button" onclick = "marriage()">Marriage Rate</button> 
+	<div class="dropdown">
+	  <button class="dropbtn">Life Expectancy</button>
+	  <div class="dropdown-content">
+		<option value="allraces" onclick = "allraces()">Overall</option>
+		<option value="males_all" onclick = "maleexpectancy()">Males</option>
+        <option value="females_all" onclick = "femaleexpectancy()">Females</option>
+	</div>
+	</div>
+</div>
+
+<div id="graph" ></div>
+
+
+<script>
+
+
+    function tooltipHtml(n, d){	/* function to create html content string in tooltip div. */
+        return "<h4>"+n+"</h4><table>"+
+				"<tr><td>Health Rank :</td><td>"+(d.healthrank)+"</td></tr>"+
+				<!-- "<tr><td>population</td><td>"+(d.population)+"</td></tr>"+ -->
+                "<tr><td>Life Expectancy :</td><td>"+(d.allraces)+"</td></tr>"+
+				"<tr><td>Unemployment Rate :</td><td>"+(d.unemployment_rate)+"</td></tr>"+
+				"<tr><td>Marriage Rate :</td><td>"+(d.marriage_rate)+"</td></tr>"+
+				<!-- "<tr><td>male</td><td>"+(d.male)+"</td></tr>"+ -->
+                "</table>";
+    }
+
+    d3.csv("project.csv", function(error, data) {
+        data.forEach(function(d){
+            data[d.state] = {healthrank : d.healthrank, allraces: d.allraces,unemployment_rate : d.unemployment_rate, marriage_rate : d.marriage_rate, color:d3.interpolate("#ff0000","#f7f13b")(+d.healthrank/51)};
+			//data[d.state] = {, color:d3.interpolate("#ffffcc", "#800026")(+d.male/29760)};
+			
+        });
+        uStates.draw("#statesvg", data, tooltipHtml);
+    });
+
+	// healthrank bar chart code
+	function healthchart(){
+var margin= { top: 20, right: 10, bottom : 100, left: 40},
+	width = 1250 - margin.right - margin.left,
+	height = 650-margin.top - margin.bottom;
+	d3.select("#graph").select("svg").remove();
+var svg= d3.select('#graph')
+	.append('svg')
+	.attr ({
+	
+		"width" : width + margin.right + margin.left,
+		"height" : height + margin.top + margin.bottom
+	})
+	
+		.append('g')
+			.attr("transform" , "translate(" +margin.left +',' + margin.right + ')');
+			
+
+var xScale = d3.scale.ordinal()
+	.rangeRoundBands([0, width], 0.2,0.2);
+	
+var yScale = d3.scale.linear()
+	.range([height, 0]);
+	
+var y1Scale = d3.scale.linear()
+	.range([height, 0]);	
+	
+var xAxis = d3.svg.axis()
+	.scale(xScale)
+	.orient("bottom");
+	
+var yAxis = d3.svg.axis()
+	.scale(yScale)
+	.orient("left");
+	
+d3.csv("project.csv", function(error, data) {
+if(error) console.log("Error: data not loaded");
+	data.forEach(function(d) {
+		d.healthrank = +d.healthrank;
+		d.state = d.state;
+		console.log(d.healthrank);
+});
+
+	
+	
+	xScale.domain(data.map(function(d) {return d.state; }) );
+	yScale.domain([0, d3.max(data, function(d) {return d.healthrank; })]);
+	
+	svg.append('g')
+			.attr("class", "xaxis")
+			.attr("transform", "translate(0,"+ height +")")
+			.call(xAxis)
+			.attr("fill","white")
+			.selectAll('text')		
+			.style("font-size", "10px");
+			
+		svg.append('g')
+			.attr("class", "y axis")
+			.call(yAxis)
+			.attr("fill","white")
+			.style("font-size", "10px");	
+			
+// 	var tooltip = d3.select("#graph").append("div")
+	//		.attr("class", "tooltip")
+		//	.style("opacity", 0); -->
+	
+	svg.selectAll(".bar")
+		.data(data)
+		.enter().append("rect")
+		//.attr("class", "bar")
+		.attr("height", 0)
+		.attr("y", height)
+		.transition().duration(1000)
+		.delay(function(d,i){return i * 200;})
+		.attr({
+			'x':function(d) {return xScale(d.state); },
+			'y': function(d) {return yScale(d.healthrank); },
+			"width": xScale.rangeBand(),
+			"height": function(d) {return height - yScale(d.healthrank);}
+		
+		})
+		
+		.style("fill", function(d,i) {return 'rgb(20, 20, ' +((i+30) +100) + ')'});
+		//<!-- .on('mouseover', function(d) {tooltip.transition().duration(200).style("opacity",0.9);
+			//tooltip.html(d.healthrank); 
+		//	}); -->
+		
+		});
+	}
+	
+	// All races bar chart code
+	function allraces(){
+var margin= { top: 20, right: 10, bottom : 100, left: 40},
+	width = 1250 - margin.right - margin.left,
+	height = 650-margin.top - margin.bottom;
+	d3.select("#graph").select("svg").remove();
+var svg= d3.select('#graph')
+	.append('svg')
+	.attr ({
+	
+		"width" : width + margin.right + margin.left,
+		"height" : height + margin.top + margin.bottom
+	})
+	
+		.append('g')
+			.attr("transform" , "translate(" +margin.left +',' + margin.right + ')');
+			
+
+var xScale = d3.scale.ordinal()
+	.rangeRoundBands([0, width], 0.2,0.2);
+	
+var yScale = d3.scale.linear()
+	.range([height, 0]);
+	
+var y1Scale = d3.scale.linear()
+	.range([height, 0]);	
+	
+var xAxis = d3.svg.axis()
+	.scale(xScale)
+	.orient("bottom");
+	
+var yAxis = d3.svg.axis()
+	.scale(yScale)
+	.orient("left");
+	
+d3.csv("project.csv", function(error, data) {
+if(error) console.log("Error: data not loaded");
+	data.forEach(function(d) {
+		d.allraces = +d.allraces;
+		d.state = d.state;
+		console.log(d.allraces);
+});
+
+	
+	
+	xScale.domain(data.map(function(d) {return d.state; }) );
+	yScale.domain([0, d3.max(data, function(d) {return d.allraces; })]);
+	
+	svg.append('g')
+			.attr("class", "xaxis")
+			.attr("transform", "translate(0,"+ height +")")
+			.call(xAxis)
+			.attr("fill","white")
+			.selectAll('text')		
+			.style("font-size", "10px");
+			
+		svg.append('g')
+			.attr("class", "y axis")
+			.call(yAxis)
+			.attr("fill","white")
+			.style("font-size", "10px");
+	
+	svg.selectAll('.bar')
+		.data(data)
+		.enter()
+		.append('rect')
+		.attr("height", 0)
+		.attr("y", height)
+		.transition().duration(1000)
+		.delay(function(d,i){return i * 200;})
+		.attr({
+			'x':function(d) {return xScale(d.state); },
+			'y': function(d) {return yScale(d.allraces); },
+			"width": xScale.rangeBand(),
+			"height": function(d) {return height - yScale(d.allraces);}
+		
+		})
+		
+		.style("fill", function(d,i) {return 'rgb(20, 20, ' +((i+30) +100) + ')'});
+		
+		
+		
+		
+		
+		});
+	}
+	
+	// Unemployment rate concentric pie chart
+	
+	function unemployment(){
+	 var width = 1500,
+    height = 1000,
+    radius = 500;
+//color of outer circle	
+var color = d3.scale.ordinal()
+ //   .range(["#145a32", " #a9dfbf "]);
+	.range(["#ff8c00"]);
+//color of inner circle
+var color1 = d3.scale.ordinal()
+//	.range([" #f5b041", "  #e59866  "]);
+//	.range(["#f7f13b"]);
+	.range(["#000000"]);
+//outer circle dimensions
+var arc = d3.svg.arc()
+    .outerRadius(radius)
+    .innerRadius(radius-145);
+//inner circle dimensions	
+var arc1= d3.svg.arc()
+	.outerRadius(radius-125)
+	.innerRadius(50);
+//lable for outer circle
+var labelArc = d3.svg.arc()
+    .outerRadius(radius-50 )
+    .innerRadius(radius-50 );
+//label for inner circle	
+var labelArc1=d3.svg.arc()
+	.outerRadius(radius-320)////
+	.innerRadius(radius-5)
+//creating the pie layout
+var pie = d3.layout.pie()
+    .value(function(d) { return d.unemployment_rate; })
+	.sort(null);
+	d3.select("#graph").select("svg").remove();
+//appending the svg
+var svg = d3.select("#graph").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+//importing data
+d3.csv("project.csv", type, function(error, data) {
+  if (error) throw error;
+
+ var g = svg.selectAll(".arc")
+      .data(pie(data))
+    .enter().append("g")
+      .attr("class", "arc");
+	  
+//filling the outer circle with one attribute
+ g.append("path")
+      .attr("d", arc)
+	  .style("fill", function(d) {return color(d.data.state);});
+//filling the inner circle with another attribute	  
+g.append("path")
+      .attr("d", arc1)
+	  .style("fill", function(d) {return color1(d.data.unemployment_rate);});
+//positioning the labels
+ g.append("text")
+	  .attr("fill","white")
+      .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+      .text(function(d) { return d.data.state; });
+	 
+	 g.append("text")
+	  .attr("fill","blue")
+      .attr("transform", function(d) { return "translate(" + labelArc1.centroid(d) + ")"; })
+      .text(function(d) { return d.data.unemployment_rate; });
+	  
+	  
+});
+
+function type(d) {
+  d.unemployment_rate = +d.unemployment_rate;
+  return d;
+}
+	}
+	
+	// Marriage rate pie chart
+	
+	function marriage(){
+	var width = 1500,
+    height = 1000,
+    radius = 500;
+//color of outer circle	
+var color = d3.scale.ordinal()
+ //   .range(["#145a32", " #a9dfbf "]);
+	.range(["#ff8c00"]);
+//color of inner circle
+var color1 = d3.scale.ordinal()
+//	.range([" #f5b041", "  #e59866  "]);
+	.range(["#000"]);
+//outer circle dimensions
+var arc = d3.svg.arc()
+    .outerRadius(radius)
+    .innerRadius(radius-145);
+//inner circle dimensions	
+var arc1= d3.svg.arc()
+	.outerRadius(radius-125)
+	.innerRadius(50);
+//lable for outer circle
+var labelArc = d3.svg.arc()
+    .outerRadius(radius-50 )
+    .innerRadius(radius-50 );
+//label for inner circle	
+var labelArc1=d3.svg.arc()
+	.outerRadius(radius-320)////
+	.innerRadius(radius-5)
+//creating the pie layout
+var pie = d3.layout.pie()
+    .value(function(d) { return d.marriage_rate; })
+	.sort(null);
+d3.select("#graph").select("svg").remove();
+//appending the svg
+var svg = d3.select("#graph").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+  .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+//importing data
+d3.csv("project.csv", type, function(error, data) {
+  if (error) throw error;
+
+ var g = svg.selectAll(".arc")
+      .data(pie(data))
+    .enter().append("g")
+      .attr("class", "arc");
+	  
+//filling the outer circle with one attribute
+ g.append("path")
+      .attr("d", arc)
+	  .style("fill", function(d) {return color(d.data.state);});
+//filling the inner circle with another attribute	  
+g.append("path")
+      .attr("d", arc1)
+	  .style("fill", function(d) {return color1(d.data.marriage_rate);});
+//positioning the labels
+ g.append("text")
+	  .attr("fill","white")
+      .attr("transform", function(d) { return "translate(" + labelArc.centroid(d) + ")"; })
+      .text(function(d) { return d.data.state; });
+	 
+	 g.append("text")
+	  .attr("fill","blue")
+      .attr("transform", function(d) { return "translate(" + labelArc1.centroid(d) + ")"; })
+      .text(function(d) { return d.data.marriage_rate; });
+	  
+	  
+});
+
+function type(d) {
+  d.marriage_rate = +d.marriage_rate;
+  return d;
+}
+	}
+	
+	
+	//male life expectancy
+	function maleexpectancy(){
+	var margin= { top: 20, right: 10, bottom : 100, left: 40},
+	width = 1250 - margin.right - margin.left,
+	height = 650-margin.top - margin.bottom;
+	d3.select("#graph").select("svg").remove();
+var svg= d3.select('#graph')
+	
+	.append('svg')
+	.attr ({
+	
+		"width" : width + margin.right + margin.left,
+		"height" : height + margin.top + margin.bottom
+	})
+	
+		.append('g')
+			.attr("transform" , "translate(" +margin.left +',' + margin.right + ')');
+			
+
+var xScale = d3.scale.ordinal()
+	.rangeRoundBands([0, width], 0.2,0.2);
+	
+var yScale = d3.scale.linear()
+	.range([height, 0]);
+	
+var y1Scale = d3.scale.linear()
+	.range([height, 0]);	
+	
+var xAxis = d3.svg.axis()
+	.scale(xScale)
+	.orient("bottom");
+	
+var yAxis = d3.svg.axis()
+	.scale(yScale)
+	.orient("left");
+	
+d3.csv("project.csv", function(error, data) {
+if(error) console.log("Error: data not loaded");
+	data.forEach(function(d) {
+		d.female_all_race = +d.female_all_race;
+		d.state = d.state;
+		console.log(d.female_all_race);
+});
+
+	
+	
+	xScale.domain(data.map(function(d) {return d.state; }) );
+	yScale.domain([71.5, d3.max(data, function(d) {return d.female_all_race; })]);
+	
+		
+		svg.append('g')
+			.attr("class", "xaxis")
+			.attr("transform", "translate(0,"+ height +")")
+			.call(xAxis)
+			.attr("fill","white")
+			.selectAll('text')			
+			.style("font-size", "10px");
+			
+		svg.append('g')
+			.attr("class", "y axis")
+			.call(yAxis)
+			.attr("fill","white")
+			.style("font-size", "10px");
+	
+	svg.selectAll('.bar')
+		.data(data)
+		.enter()
+		.append('rect')
+		.attr("height", 0)
+		.attr("y", height)
+		.transition().duration(1000)
+		.delay(function(d,i){return i * 200;})
+		.attr({
+			'x':function(d) {return xScale(d.state); },
+			'y': function(d) {return yScale(d.female_all_race); },
+			"width": xScale.rangeBand(),
+			"height": function(d) {return height - yScale(d.female_all_race);}
+		
+		})
+		
+		.style("fill", function(d,i) {return 'rgb(20, 20, ' +((i+30) +100) + ')'});
+		
+		
+		
+		});
+	}
+	
+	//female life expectancy
+	function femaleexpectancy(){
+	var margin= { top: 20, right: 10, bottom : 100, left: 40},
+	width = 1250 - margin.right - margin.left,
+	height = 650-margin.top - margin.bottom;
+	d3.select("#graph").select("svg").remove();
+var svg= d3.select('#graph')
+	
+	.append('svg')
+	.attr ({
+	
+		"width" : width + margin.right + margin.left,
+		"height" : height + margin.top + margin.bottom
+	})
+	
+		.append('g')
+			.attr("transform" , "translate(" +margin.left +',' + margin.right + ')');
+			
+
+var xScale = d3.scale.ordinal()
+	.rangeRoundBands([0, width], 0.2,0.2);
+	
+var yScale = d3.scale.linear()
+	.range([height, 0]);
+	
+var y1Scale = d3.scale.linear()
+	.range([height, 0]);	
+	
+var xAxis = d3.svg.axis()
+	.scale(xScale)
+	.orient("bottom");
+	
+var yAxis = d3.svg.axis()
+	.scale(yScale)
+	.orient("left");
+	
+d3.csv("project.csv", function(error, data) {
+if(error) console.log("Error: data not loaded");
+	data.forEach(function(d) {
+		d.female_all_race = +d.female_all_race;
+		d.state = d.state;
+		console.log(d.female_all_race);
+});
+
+	
+	
+	xScale.domain(data.map(function(d) {return d.state; }) );
+	yScale.domain([71.5, d3.max(data, function(d) {return d.female_all_race; })]);
+	
+	svg.append('g')
+			.attr("class", "xaxis")
+			.attr("transform", "translate(0,"+ height +")")
+			.call(xAxis)
+			.attr("fill","white")
+			.selectAll('text')
+			.style("font-size", "10px");
+			
+		svg.append('g')
+			.attr("class", "y axis")
+			.call(yAxis)
+			.attr("fill","white")
+			.style("font-size", "10px");
+			
+	svg.selectAll('.bar')
+		.data(data)
+		.enter()
+		.append('rect')
+		.attr("height", 0)
+		.attr("y", height)
+		.transition().duration(1000)
+		.delay(function(d,i){return i * 200;})
+		.attr({
+			'x':function(d) {return xScale(d.state); },
+			'y': function(d) {return yScale(d.female_all_race); },
+			"width": xScale.rangeBand(),
+			"height": function(d) {return height - yScale(d.female_all_race);}
+		
+		})
+		
+		.style("fill", function(d,i) {return 'rgb(20, 20, ' +((i+30) +100) + ')'});
+		
+		
+		
+		
+		
+		});
+	}
+
+</script>
+
+</body>
