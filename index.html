@@ -3,7 +3,7 @@
 
 <link rel="stylesheet" type="text/css" href="style.css">
 <body>
-<div id = "life">Life Expectancy in US</div>
+<div id = "life">Espérance de vie aux États-Unis</div>
 <div id="tooltip"></div><!-- div to hold tooltip. -->
 
 <svg width="960" height="600" id="statesvg"></svg> <!-- svg to hold the map. -->
@@ -24,15 +24,15 @@
  
 </div> -->
 <div id = "buttons">
-<button id = "but" type = "button" onclick = "healthchart()">Health Rank</button> 
-<button id = "but" type = "button" onclick = "unemployment()">Unemployment Rate</button> 
-<button id = "but" type = "button" onclick = "marriage()">Marriage Rate</button> 
+<button id = "but" type = "button" onclick = "healthchart()">Rang de santé</button> 
+<button id = "but" type = "button" onclick = "unemployment()">Taux de chômage</button> 
+<button id = "but" type = "button" onclick = "marriage()">Taux de mariage</button> 
 	<div class="dropdown">
-	  <button class="dropbtn">Life Expectancy</button>
+	  <button class="dropbtn">Espérance de vie</button>
 	  <div class="dropdown-content">
-		<option value="allraces" onclick = "allraces()">Overall</option>
-		<option value="males_all" onclick = "maleexpectancy()">Males</option>
-        <option value="females_all" onclick = "femaleexpectancy()">Females</option>
+		<option value="allraces" onclick = "allraces()">En général</option>
+		<option value="males_all" onclick = "maleexpectancy()">Hommes</option>
+        <option value="females_all" onclick = "femaleexpectancy()">Femmes</option>
 	</div>
 	</div>
 </div>
@@ -45,11 +45,11 @@
 
     function tooltipHtml(n, d){	/* function to create html content string in tooltip div. */
         return "<h4>"+n+"</h4><table>"+
-				"<tr><td>Health Rank :</td><td>"+(d.healthrank)+"</td></tr>"+
+				"<tr><td>Rang de santé :</td><td>"+(d.healthrank)+"</td></tr>"+
 				<!-- "<tr><td>population</td><td>"+(d.population)+"</td></tr>"+ -->
                 "<tr><td>Life Expectancy :</td><td>"+(d.allraces)+"</td></tr>"+
-				"<tr><td>Unemployment Rate :</td><td>"+(d.unemployment_rate)+"</td></tr>"+
-				"<tr><td>Marriage Rate :</td><td>"+(d.marriage_rate)+"</td></tr>"+
+				"<tr><td>Taux de chômage :</td><td>"+(d.unemployment_rate)+"</td></tr>"+
+				"<tr><td>Taux de mariage :</td><td>"+(d.marriage_rate)+"</td></tr>"+
 				<!-- "<tr><td>male</td><td>"+(d.male)+"</td></tr>"+ -->
                 "</table>";
     }
